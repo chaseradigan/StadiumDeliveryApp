@@ -9,7 +9,8 @@ import {
     Content,
     Container,
     Button,
-    Text
+    Text,
+    Icon
 } from "native-base";
 export default class LoginScreen extends React.Component {
     state = { email: "", password: "", errorMessage: null };
@@ -18,6 +19,7 @@ export default class LoginScreen extends React.Component {
             firebase
                 .auth()
                 .signInWithEmailAndPassword(this.state.email, this.state.password);
+                
         } catch (error) {
             this.setState({ errorMessage: error });
         }

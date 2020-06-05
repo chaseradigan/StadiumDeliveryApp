@@ -1,0 +1,73 @@
+{
+    "sections": [{
+      "title": "Menu",
+      "service_availability": [{
+          "day_of_week": "saturday",
+          "enabled": true,
+          "time_periods": [{
+            "start_time": "09:00",
+            "end_time": "13:00"
+          }]
+        },
+        {
+          "day_of_week": "sunday",
+          "enabled": true,
+          "time_periods": [{
+            "start_time": "09:00",
+            "end_time": "13:00"
+          }]
+        }
+      ],
+      "subsections": [{
+        "title": "Burgers",
+        "items": [{
+            "title": "Hamburger",
+            "price": 7.99,
+            "currency_code": "USD",
+            "external_id": "sku-hamburger",
+            "item_description": "Made with the freshest organic beef",
+            "key":"1"
+          },
+          {
+            "title": "Bacon Cheese Burger",
+            "price": 9.99,
+            "currency_code": "USD",
+            "external_id": "sku-bacon-cheese-burger",
+            "item_description": "Made with the juiciest canadian bacon",
+            "key":"2"
+          }
+        ]
+      }, {
+        "title": "Drinks",
+        "items": [
+            {
+                "title": "Beer",
+                "price": 5.99,
+                "currency_code": "USD",
+                "external_id": "sku-beer",
+                "item_description": "Pilsner, IPA, and Lagers",
+                "is_alcohol": true,
+                "key":"3"
+              },
+            {
+            "title": "Mimosa",
+            "price": 4.99,
+            "currency_code": "USD",
+            "external_id": "sku-mimosa",
+            "item_description": "Made with the freshest organic oranges",
+            "is_alcohol": true,
+            "key":"4"
+          },
+          {
+            "title": "Coffee",
+            "price": 2.99,
+            "currency_code": "USD",
+            "external_id": "sku-coffee",
+            "item_description": "Made with sustainably sourced beans",
+            "key":"5"
+          }
+        ]
+      }]
+    }]
+  }
+  

@@ -3,7 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import SearchStackNavigator from './SearchStackNavigator';
 import StackNavigator from './StackNavigator';
-import { Icon } from 'native-base';
+import { Icon, Right } from 'native-base';
 import SettingsStackNavigator from './SettingsStackNavigator';
 const Tab = createBottomTabNavigator();
 

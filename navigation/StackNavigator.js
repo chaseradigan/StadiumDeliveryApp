@@ -2,19 +2,20 @@ import React from 'react';
 import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
 import HomeScreen from '../screens/HomeScreen'
 import VenScreen from '../screens/VenScreen';
-import { Button, Icon } from 'native-base';
 import MapScreen from '../screens/MapScreen';
 import MenuScreen from '../screens/MenuScreen';
+import CartIcon from '../screens/components/CartIcon';
+import ShoppingCart from '../screens/ShoppingCart';
 
 
 const Stack = createStackNavigator();
 
-
 export default function MyStack({ navigation }) {
+
     return (
-        <Stack.Navigator >
+        <Stack.Navigator>
             <Stack.Screen name="Home" component={HomeScreen} options={{
-                title: 'FoodXperience',
+                title: 'BITE',
                 headerStyle: {
                     backgroundColor: 'black'
                 },
@@ -23,6 +24,7 @@ export default function MyStack({ navigation }) {
                 headerTitleStyle: {
                     fontWeight: 'bold',
                 },
+                headerRight: () =>  <CartIcon {...navigation}/>
             }} />
             <Stack.Screen name="Menu" component={MenuScreen} options={{
                 title: 'Menu',
@@ -34,7 +36,7 @@ export default function MyStack({ navigation }) {
                 headerTitleStyle: {
                     fontWeight: 'bold',
                 },
-                headerBackTitle:"Back"
+                headerBackTitle: "Back"
             }} />
             <Stack.Screen name="Venue" component={VenScreen}
                 options={{
@@ -47,14 +49,31 @@ export default function MyStack({ navigation }) {
                     headerTitleStyle: {
                         fontWeight: 'bold',
                     },
-                    headerBackTitle:"Back"
+                    headerBackTitle: "Back"
                 }}
             />
-            <Stack.Screen name="Map" component={MapScreen}
+            <Stack.Screen
+                name="Map"
+                component={MapScreen}
+                options={{
+                    title: 'Map',
+                    headerStyle: {
+                        backgroundColor: 'black'
+                    },
 
+                    headerTintColor: 'white',
+                    headerTitleStyle: {
+                        fontWeight: 'bold',
+                    },
+                    headerBackTitle: "Home"
+                }}
+            />
+            <Stack.Screen
+                name="Cart"
+                component={ShoppingCart}
                 options={{
                     cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS,
-                    title: 'Map',
+                    title: 'Cart',
                     headerStyle: {
                         backgroundColor: 'black'
                     },

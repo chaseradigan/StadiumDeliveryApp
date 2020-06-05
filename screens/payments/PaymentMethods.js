@@ -7,6 +7,9 @@ export default class PaymentMethodsScreen extends React.Component {
         super();
 
     }
+    componentDidMount(){
+        
+    }
     onChange = (form) => {
 
     }

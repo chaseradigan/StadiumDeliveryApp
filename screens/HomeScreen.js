@@ -1,10 +1,14 @@
 import React from 'react';
+import firebase from "../firebase";
+import "firebase/firestore";
+import "firebase/auth";
+import "firebase/storage";
 import { View, Image, ImageBackground, StatusBar, RefreshControl, StyleSheet } from 'react-native';
-import { Container, Card, CardItem, Left, Body, Button, Icon, Right, Content, Text, Fab, H1, Grid, Row, Col, List, ListItem, Input, Item, Form, Label } from 'native-base';
-import { ScrollView, TouchableHighlight } from 'react-native-gesture-handler';
+import { Container, Card, CardItem, Left, Body, Icon, Right, Content, Text, Fab, H1, Grid, Row, Col, List, ListItem, Input, Item, Form, Label, Header } from 'native-base';
+import { ScrollView } from 'react-native-gesture-handler';
 import * as Animatable from "react-native-animatable";
-import CardList from './components/CardList';
 import UberCard from './components/UberCard';
+var db = firebase.firestore();
 export default class HomeScreen extends React.Component {
     constructor(props) {
         super(props);
@@ -15,21 +19,45 @@ export default class HomeScreen extends React.Component {
             },
             seatOpen: false,
             refreshing: false,
-            locations: [
-                { name: "Hawks Nest", type: "Food and Beverages", stadium: "Century Link Field", image: "hawksNest", time: "11 minutes", rating: "4.6 (500+)" },
-                { name: "Craft House", type: "Food and Beverages", stadium: "Century Link Field", image: "crafthouse", time: "15 minutes", rating: "4.8 (500+)" }
-            ]
+            locations: []
         }
     }
     componentDidMount() {
-        StatusBar.setBarStyle('light-content')
+        StatusBar.setBarStyle('light-content');
+        this.setUserDoc();
+        this.getLocationsNearBy();
+    }
+    getLocationsNearBy(){
+        let data =[];
+        var locRef = db.collection("locations").doc("states").collection("WI").get().then(querySnapshot=>{
+            querySnapshot.forEach(function(doc){
+                //console.log(Array(doc.data()), "DOCDATA")
+                data.push(doc.data());
+            })
+            this.setState({locations:data})
+        });
+    }
+    setUserDoc(){
+        var userRef = db.collection("users").doc(firebase.auth().currentUser.uid);
+        userRef
+        .get()
+        .then(doc => {
+          if (!doc.exists) {
+             db.collection("users").doc(firebase.auth().currentUser.uid).set({
+                email:firebase.auth().currentUser.email
+            })
+          }
+        })
+        .catch(function(error) {
+          console.log("Error getting document:", error);
+        });
     }
     handleSeat = () => {
         this.setState({ seatOpen: !this.state.seatOpen })
     }
     onRefresh = () => {
         this.setState({ refreshing: true });
-
+        this.getLocationsNearBy();
         setTimeout(function () {
             this.setState({ refreshing: false })
         }.bind(this)), 2000
@@ -85,20 +113,16 @@ export default class HomeScreen extends React.Component {
 
                     <View>
                         <Grid>
-                            <Card style={{ paddingBottom: 14 }}>
+                            <Card style={{ paddingBottom: 14, width:"100%" }}>
                                 <CardItem header>
                                     <Text>Near By</Text>
                                 </CardItem>
                                 <Row >
                                     <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
                                         {this.state.locations.map((location, index) => (
-                                            <UberCard {...this.props}
-                                                key={location.name}
-                                                pricing={"$$"}
-                                                location={location.type}
-                                                name={location.name}
-                                                wait={location.time}
-                                                rating={location.rating} />
+                                            <UberCard key={index} {...this.props}
+                                                location={location}
+                                                />
                                         ))}
                                     </ScrollView>
 

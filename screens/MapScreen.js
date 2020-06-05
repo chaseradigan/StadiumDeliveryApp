@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import MapView from 'react-native-maps';
 import { StyleSheet, Text, View, Dimensions } from 'react-native';
 import * as Location from 'expo-location';
+import { Transition } from 'react-navigation-fluid-transitions';
 export default class MapScreen extends React.Component {
     constructor(){
         super();
@@ -28,11 +29,13 @@ export default class MapScreen extends React.Component {
     }
   render() {
     return (
+      <Transition appear="scale" disappear="scale">
       <View style={styles.container}>
       {this.state.location ? 
         <MapView showsUserLocation initialRegion={{latitude:this.state.location.coords.latitude, longitude:this.state.location.coords.longitude, latitudeDelta:0.03, longitudeDelta:0.03}} style={styles.mapStyle} />
       :<Text>Location Permission Disabled</Text>}
         </View>
+        </Transition>
     );
   }
 }

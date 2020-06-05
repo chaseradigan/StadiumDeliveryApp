@@ -65,6 +65,26 @@ export default class SettingsScreen extends React.Component {
                                 <Icon name="arrow-forward" />
                             </Right>
                         </CardItem>
+                        <CardItem button onPress={() => this.props.navigation.navigate("MockData")}>
+                            <Left>
+                                <Icon active name="ios-cloud-download" />
+                                <Text>Mock Data</Text>
+                            </Left>
+                            
+                            <Right>
+                                <Icon name="arrow-forward" />
+                            </Right>
+                        </CardItem>
+                        <CardItem button onPress={() => this.props.navigation.navigate("Notifications")}>
+                            <Left>
+                                <Icon active name="ios-notifications" />
+                                <Text>Notifications</Text>
+                            </Left>
+                            
+                            <Right>
+                                <Icon name="arrow-forward" />
+                            </Right>
+                        </CardItem>
                         <CardItem button onPress={this.Logout}>
 
                             <Icon active name="ios-log-out" />

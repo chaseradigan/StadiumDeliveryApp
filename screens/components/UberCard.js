@@ -3,6 +3,7 @@ import { Platform, View, Text, TouchableOpacity, StyleSheet, Image, Animated } f
 
 import Tag from './Tag'
 import { Ionicons } from '@expo/vector-icons';
+import { Icon } from 'native-base';
 
 export default class Card extends React.Component {
   constructor(props) {
@@ -29,7 +30,7 @@ export default class Card extends React.Component {
   render() {
     return (
       <View style={this.props.style}>
-        <TouchableOpacity activeOpacity={0.7} onPress={() => this.props.navigation.navigate('Venue',{item:this.props.name})}>
+        <TouchableOpacity activeOpacity={0.7} onPress={() => this.props.navigation.navigate('Venue',{location:this.props.location})}>
           <View style={styles.container}>
             <View>
               <Image style={styles.image} source={{ uri: 'https://cdn.dribbble.com/users/1846841/screenshots/4961950/epi_x.png' }} />
@@ -48,12 +49,12 @@ export default class Card extends React.Component {
                 </Animated.View>
               </TouchableOpacity>
             </View>
-            <Text style={styles.title}>{this.props.name}</Text>
-            <Text style={styles.description}>{this.props.pricing}</Text>
+            <Text style={styles.title}>{this.props.location.name}</Text>
+            <Text style={styles.description}>{this.props.location.category}</Text>
             <View style={styles.tagContainer}>
-              <Tag>{this.props.wait}</Tag>
-              <Tag>{this.props.rating}</Tag>
-              <Tag>{this.props.location}</Tag>
+              <Tag>{this.props.location.price}</Tag>
+              <Tag>{this.props.location.avgRating} <Icon style={{fontSize:14}} name="ios-star"/></Tag>
+              <Tag>{this.props.location.time}</Tag>
             </View>
           </View>
         </TouchableOpacity>

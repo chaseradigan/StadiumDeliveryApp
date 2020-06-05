@@ -10,7 +10,7 @@ export default function MyStack({ navigation }) {
     return (
         <Stack.Navigator >
             <Stack.Screen name="Search" component={SearchScreen} options={{
-                
+            headerShown:false,
                 headerStyle: {
                     backgroundColor: 'black'
                 },

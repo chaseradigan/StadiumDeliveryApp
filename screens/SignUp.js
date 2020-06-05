@@ -1,20 +1,16 @@
 // SignUp.js
 import React from "react";
 import { StyleSheet, TextInput, View } from "react-native";
-
 import firebase from "../firebase";
+import "firebase/auth";
 import {
     Text,
     Container,
     Content,
-    Icon,
-    Header,
-    Body,
     Form,
     Item,
     Input,
-    Button,
-    Title
+    Button
 } from "native-base";
 export default class SignUpScreen extends React.Component {
     state = { email: "", password: "", errorMessage: null };

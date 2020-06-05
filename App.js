@@ -4,11 +4,13 @@ import * as Font from "expo-font";
 import { NavigationContainer } from '@react-navigation/native';
 import AuthStackNavigator from './navigation/AuthStackNavigator';
 import firebase from "./firebase";
-import { StatusBar, Image, View, SafeAreaView } from 'react-native';
+import { StatusBar, Image, View, Vibration } from 'react-native';
 import { Ionicons } from "@expo/vector-icons"
-import { AppLoading } from 'expo';
-import {Asset} from "expo-asset";
+import { AppLoading, Notifications } from 'expo';
+import { Asset } from "expo-asset";
 import TabNavigator from './navigation/TabNavigator';
+import { Provider } from 'react-redux';
+import { store } from './redux/app-redux';
 function cacheImages(images) {
   return images.map(image => {
     if (typeof image === 'string') {
@@ -25,7 +27,12 @@ function cacheFonts(fonts) {
 export default class App extends React.Component {
   constructor() {
     super();
-    this.state = { active: false, isReady: false, authDone:false }
+    this.state = {
+      active: false,
+      isReady: false,
+      authDone: false,
+      token: ""
+    }
   }
   async componentDidMount() {
     await Font.loadAsync({
@@ -35,12 +42,11 @@ export default class App extends React.Component {
     });
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
-        this.setState({ active: true, authDone:true })
+        this.setState({ active: true, authDone: true })
       } else {
-        this.setState({ active: false, authDone:true})
+        this.setState({ active: false, authDone: true })
       }
     })
-
   }
   async _loadAssetsAsync() {
     const imageAssets = cacheImages([
@@ -54,25 +60,29 @@ export default class App extends React.Component {
 
     await Promise.all([...imageAssets]);
   }
+
+
   render() {
     if (this.state.isReady && this.state.authDone)
       return (
-        <NavigationContainer>
-          <StatusBar barStyle="light-content" />
-          {this.state.active ?
-            <TabNavigator /> :
-            <AuthStackNavigator />}
-        </NavigationContainer>
+        <Provider store={store}>
+          <NavigationContainer>
+            <StatusBar barStyle="light-content" />
+            {this.state.active ?
+              <TabNavigator /> :
+              <AuthStackNavigator />}
+          </NavigationContainer>
+        </Provider>
       )
     else
       return (
-        <View style={{flex:1}}>
-          <Image source={require('./assets/splash.png')}/>
-        <AppLoading
-          startAsync={this._loadAssetsAsync}
-          onFinish={() => this.setState({ isReady: true })}
-          onError={console.warn}
-        />
+        <View style={{ flex: 1 }}>
+          <Image source={require('./assets/splash.png')} />
+          <AppLoading
+            startAsync={this._loadAssetsAsync}
+            onFinish={() => this.setState({ isReady: true })}
+            onError={console.warn}
+          />
         </View>
       )
   }

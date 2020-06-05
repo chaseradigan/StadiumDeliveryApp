@@ -5,11 +5,25 @@ import {
     StyleSheet,
     View,
     Animated,
-    Text
+    Text,
+    Button
 } from 'react-native'
 import { H1 } from 'native-base'
-
-export default class MenuScreen extends React.Component {
+import {connect} from 'react-redux';
+import {addItemToCart} from '../redux/app-redux';
+const mapStateToProps = (state) =>{
+    return{
+        cart:state.cart,
+    }
+}
+const mapDispatchToProps = (dispatch)=>{
+    return {
+        addItemToCart: (item)=>{
+            dispatch(addItemToCart(item))
+        }
+    };
+}
+class MenuScreen extends React.Component {
     static navigationOptions = {
         header: null,
     }
@@ -26,7 +40,8 @@ export default class MenuScreen extends React.Component {
                 tacos: 'https://images.unsplash.com/photo-1562059390-a761a084768e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60',
                 hotdogs: 'https://images.unsplash.com/photo-1585238340475-400f04d2c8a1?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60',
             },
-            headerName: ""
+            headerName: "",
+            cart:this.props.cart
         }
         this.scrollY = new Animated.Value(0)
     }
@@ -43,7 +58,13 @@ export default class MenuScreen extends React.Component {
             default: this.setState({ headerName: item.charAt(0).toUpperCase() + item.substring(1, item.length) })
         }
     }
+    onSetItem=()=>{
+        let tempCart = Object.assign([],this.props.cart);
+        tempCart.push({price:'100', item:"burger", key:`${tempCart.length}`})
+        this.props.addItemToCart(tempCart);
+    }
     render() {
+        
         const headerContainerWidth = this.scrollY.interpolate({
             inputRange: [0, 125],
             outputRange: ['90%', '100%'],
@@ -83,12 +104,13 @@ export default class MenuScreen extends React.Component {
                         <H1 style={{textAlign:"center"}}>{this.state.headerName}</H1>
                         </Animated.View>
                     </View>
+                    <Button title="add" onPress={this.onSetItem}></Button>
                 </ScrollView>
             </View>
         )
     }
 }
-
+export default connect(mapStateToProps, mapDispatchToProps)(MenuScreen);
 const styles = StyleSheet.create({
     container: {
         flex: 1,
