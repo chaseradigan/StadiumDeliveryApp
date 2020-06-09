@@ -8,7 +8,7 @@ const Stack = createStackNavigator();
 
 export default function MyStack({ navigation }) {
     return (
-        <Stack.Navigator >
+        <Stack.Navigator>
             <Stack.Screen name="Search" component={SearchScreen} options={{
             headerShown:false,
                 headerStyle: {

@@ -4,37 +4,42 @@ import {
   ScrollView,
   StyleSheet,
   View,
-  Animated
+  Animated,
+  Modal,
+  Dimensions
 } from 'react-native'
-import { H1, Card, CardItem, Left, Body, Right, Icon, Text, H3, Button } from 'native-base'
+import { H1, Card, CardItem, Left, Body, Right, Icon, Text, H3, Button, Segment, Row, Col, Header, Container } from 'native-base'
 import { connect } from 'react-redux';
-import { addItemToCart } from '../redux/app-redux';
+import { addItem } from '../redux/app-redux';
 import firebase from "../firebase";
 import "firebase/firestore";
 import "firebase/auth";
 import "firebase/storage";
 import Tag from './components/Tag';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import ReactNativeModal from 'react-native-modal';
 var db = firebase.firestore();
 const mapStateToProps = (state) => {
   return {
-    cart: state.cart,
+    mapCart: state.mapCart,
   }
 }
 const mapDispatchToProps = (dispatch) => {
   return {
-    addItemToCart: (item) => {
-      dispatch(addItemToCart(item))
+    addItem: (item) => {
+      dispatch(addItem(item))
     }
   };
 }
-class MenuScreen extends React.Component {
+class VenScreen extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
       uri: 'https://cdn.dribbble.com/users/1846841/screenshots/4961950/epi_x.png',
-      cart: this.props.cart,
-      menu: null
+      mapCart: this.props.mapCart,
+      menu: null,
+      active: "",
+      modalActive: false
     }
     this.scrollY = new Animated.Value(0)
   }
@@ -55,12 +60,15 @@ class MenuScreen extends React.Component {
     })
   }
   onSetItem = (item) => {
-    let tempCart = Object.assign([], this.props.cart);
-    tempCart.push(item)
-    this.props.addItemToCart(tempCart);
+    item.key = Math.random();
+    // let tempCart = Object.assign([], this.props.cart);
+    // tempCart.push(Object.assign({},item));
+    this.props.addItem(item);
+  }
+  Subsection = () => {
+
   }
   render() {
-
     const headerContainerWidth = this.scrollY.interpolate({
       inputRange: [0, 125],
       outputRange: ['90%', '100%'],
@@ -69,69 +77,141 @@ class MenuScreen extends React.Component {
 
     const imageContainerHeight = this.scrollY.interpolate({
       inputRange: [-200, 0],
-      outputRange: [450, 250],
+      outputRange: [450, 200],
       extrapolate: 'extend'
     })
 
     return (
-      <View style={styles.container}>
-        <Animated.View style={[styles.imageContainer, { height: imageContainerHeight }]}>
-          <Image style={styles.image} source={{ uri: this.state.uri }} />
-        </Animated.View>
-        <ScrollView onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: this.scrollY } } }])}
-          scrollEventThrottle={16}
-          stickyHeaderIndices={[1]}
-          style={styles.scrollViewContainer}
-        >
-          <View style={styles.contentContainer}>
-            {this.state.menu && this.state.menu.sections[0].subsections.map(item => (
-              <React.Fragment key={item.title}>
-                <View>
-                  <Card>
-                    <CardItem>
-                      <Body>
-                        <H3>{item.title}</H3>
-                      </Body>
-                    </CardItem>
-                  </Card>
+      <>
+        <Header noShadow iosBarStyle="light-content" style={{ paddingTop: 10, paddingLeft: 5, paddingBottom: 10, paddingRight: 5, height: 'auto', backgroundColor: "black", borderColor: "black" }}>
+          
+          <ScrollView horizontal>
+            <Row>
+              {this.state.menu && this.state.menu.sections[0].subsections.map((item, index) => (
+                <Col key={index}>
+                  <Button
+                    key={index}
+                    onPress={() => {
+                      this.setState({ active: index })
+                      this.scrollViewRef.scrollTo({
+                        y: this[index].y, animated: true
+                      })
+                    }}
+                    rounded
+                    small
+                    style={index !== this.state.active ? { backgroundColor: "white" } : { backgroundColor: "#dcdcdc" }}
+                  >
+                    <Text style={{ color: "black", fontFamily: "Avenir-Black" }}>{item.title}</Text>
+                  </Button>
+                </Col>
+              ))}
+            </Row>
+          </ScrollView>
+        </Header>
+        <View style={styles.container}>
+        <ReactNativeModal
+            deviceHeight={Dimensions.get("window").height}
+            deviceWidth={Dimensions.get("window").width}
+            style={{marginLeft:0, marginRight:0,marginTop:0}}
+            swipeDirection="down"
+            coverScreen={false}
+            backdropColor="white"
+            animationIn="slideInUp"
+            animationOut="slideOutDown"
+            backdropOpacity={1}
+            onSwipeComplete={()=>this.setState({modalActive:false})}
+            isVisible={this.state.modalActive}
+            onRequestClose={() => {
+              Alert.alert("Modal has been closed.");
+            }}
+          >
+            <Container>
+             <View style={{flex:1, alignItems:"flex-start"}}>
+                <Button transparent style={{width:"auto"}} onPress={()=>this.setState({modalActive:false, activeItem:null})}>
+                  <Icon name="ios-close" style={{color:"black", fontSize:30}}/>
+                  </Button>
                 </View>
-                {item.items.map(field => (
-                  <TouchableOpacity onPress={()=>this.onSetItem(field)}>
-                  <View style={styles.item} key={field.external_id}>
+            <View style={styles.centeredView}>
+              <View style={styles.modalView}>
+                <Text style={styles.modalText}>No options available</Text>
+              </View>
+              <Button full onPress={()=>{
+                  this.onSetItem(this.state.activeItem)
+                  this.setState({activeItem:null, modalActive:false})
+                }}
+                >
+                  <Text style={styles.modalText}>Add To Cart</Text>
+                </Button>
+            </View>
+            </Container>
+          </ReactNativeModal>
+          <Animated.View style={[styles.imageContainer, { height: imageContainerHeight }]}>
+            <Image style={styles.image} source={{ uri: this.state.uri }} />
+          </Animated.View>
+          <ScrollView
+            onScroll={
+              Animated.event([{ nativeEvent: { contentOffset: { y: this.scrollY } } }])
+            }
+            scrollEventThrottle={16}
+            stickyHeaderIndices={[1]}
+            style={styles.scrollViewContainer}
+            ref={ref => (this.scrollViewRef = ref)}
+          >
+            <View style={styles.contentContainer}>
+              {this.state.menu && this.state.menu.sections[0].subsections.map((item, index) => (
+                <React.Fragment key={item.title}>
+                  <View onLayout={event =>
+                    this[index] = event.nativeEvent.layout
+                  }>
                     <Card transparent>
                       <CardItem>
-                        <Left>
-                          <Text>{field.title}</Text>
-                        </Left>
+                        <Body>
+                          <H3 style={{ fontFamily: "Avenir-Black" }}>{item.title}</H3>
+                        </Body>
                       </CardItem>
-                      <CardItem>
-                        <Left style={{alignItems:"bottom"}}>
-                          <Tag><Text>${field.price}</Text></Tag>
-                          <Tag><Text numberOfLines={1} note>{field.item_description}</Text></Tag>
-                        </Left>
-                        </CardItem>
                     </Card>
                   </View>
-                  </TouchableOpacity>
-                ))}
-              </React.Fragment>
-            ))}
-          </View>
-          <View style={styles.stickyHeaderContainer}>
-            <Animated.View style={[styles.headerContainer, { width: headerContainerWidth }]}>
-              <H1 style={{ textAlign: "center" }}>{this.props.route.params.location.name}</H1>
-            </Animated.View>
-          </View>
-        </ScrollView>
-      </View>
+                  {item.items.map((field, index) => (
+                    <TouchableOpacity key={field.title} onPress={() => {
+                      this.setState({ modalActive: true, activeItem:field })
+                    }}>
+                      <View style={styles.item} key={field.external_id}>
+                        <Card>
+                          <CardItem header>
+                            <Left>
+                              <Text style={{ fontFamily: "Avenir" }}>{field.title}</Text>
+                            </Left>
+                          </CardItem>
+                          <CardItem>
+                            <Left style={{ alignItems: "bottom" }}>
+                              <Tag><Text note style={{ fontFamily: "Avenir-LightOblique" }}>${field.price}</Text></Tag>
+                              <Tag><Text numberOfLines={1} note style={{ fontFamily: "Avenir-LightOblique" }}>{field.item_description}</Text></Tag>
+                            </Left>
+                          </CardItem>
+                        </Card>
+                      </View>
+                    </TouchableOpacity>
+                  ))}
+                </React.Fragment>
+              ))}
+            </View>
+            <View style={styles.stickyHeaderContainer}>
+              <Animated.View style={[styles.headerContainer, { width: headerContainerWidth }]}>
+                <H1 style={{ textAlign: "center", fontFamily: "Avenir-Black" }}>{this.props.route.params.location.name}</H1>
+              </Animated.View>
+            </View>
+          </ScrollView>
+
+        </View>
+      </>
     )
   }
 }
-export default connect(mapStateToProps, mapDispatchToProps)(MenuScreen);
+export default connect(mapStateToProps, mapDispatchToProps)(VenScreen);
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#eee'
+    backgroundColor: '#fff'
   },
   scrollViewContainer: {
     flex: 1
@@ -162,7 +242,7 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     marginTop: 290,
-    backgroundColor: '#eee'
+    backgroundColor: '#fff'
   },
   image: {
     flex: 1
@@ -171,5 +251,23 @@ const styles = StyleSheet.create({
     margin: 10,
     backgroundColor: '#fff',
     height: "auto"
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22,
+    height:"100%",
+    width:"100%"
+  },
+  modalView: {
+    backgroundColor: "white",
+    alignItems: "center",
+    height:"100%",
+    width:"100%"
+  },
+  modalText: {
+    textAlign: "center",
+    fontFamily:"Avenir"
   }
 })

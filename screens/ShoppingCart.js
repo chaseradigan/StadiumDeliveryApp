@@ -1,18 +1,23 @@
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity, TouchableHighlight } from 'react-native';
 import { connect } from 'react-redux';
-import { removeItemFromCart } from '../redux/app-redux';
+import { removeItem, addItem } from '../redux/app-redux';
 import { SwipeListView } from 'react-native-swipe-list-view';
-import { Container, Content, ListItem, Left, Right, Body, H1, Text } from 'native-base';
+import { Container, Icon, Left, Right, Body, H1, Text, Card, CardItem, Button, List, ListItem, Content, Label, Segment } from 'native-base';
+import { Stepper } from 'react-native-ui-lib';
+import Tag from './components/Tag';
 const mapStateToProps = (state) => {
     return {
-        cart: state.cart,
+        mapCart: state.mapCart
     }
 }
 const mapDispatchToProps = (dispatch) => {
     return {
-        removeItemFromCart: (item) => {
-            dispatch(removeItemFromCart(item))
+        removeItem: (item) => {
+            dispatch(removeItem(item))
+        },
+        addItem: (item) => {
+            dispatch(addItem(item))
         }
     };
 }
@@ -20,86 +25,121 @@ class ShoppingCartScreen extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            cart: this.props.cart
+            mapCart: this.props.mapCart,
+            total: 0
         }
     }
     componentDidMount() {
-
+        this.getTotal([...this.props.mapCart]);
     }
-    removeItem(external_id) {
-        let tempCart = this.props.cart;
-        let newCart = [];
-        for (let i = 0; i < tempCart.length; i++) {
-            if (tempCart[i].external_id !== external_id) {
-                newCart.push(tempCart[i]);
+    getTotal(cart) {
+        if (cart.length > 0) {
+            let total = 0;
+            for (let i = 0; i < cart.length; i++) {
+                total = total + Number(cart[i][1].price) * Number(cart[i][1].count);
             }
-        }
-        this.props.removeItemFromCart(newCart);
-    }
-    componentDidUpdate(prevProps, prevState) {
-        if (prevProps.cart !== this.state.cart) {
-            this.setState({ cart: this.props.cart })
+            this.setState({ total: total })
         }
     }
-
-
-    deleteRow(rowMap, rowKey, external_id){
-        rowMap[rowKey].closeRow();
-        const newData = [...this.state.cart];
-        const prevIndex = this.state.cart.findIndex(item => item.key === rowKey);
-        newData.splice(prevIndex, 1);
-        this.setState({cart:newData})
-        this.removeItem(external_id);
+    addItem(item) {
+        this.props.addItem(item);
+        this.setState({ mapCart: this.props.mapCart });
+        this.getTotal([...this.state.mapCart])
+    }
+    removeItem(item) {
+        this.props.removeItem(item);
+        this.setState({ mapCart: this.props.mapCart });
+        this.getTotal([...this.state.mapCart])
     }
     renderHiddenItem = (data, rowMap) => (
         <View style={styles.rowBack}>
             <TouchableOpacity
                 style={[styles.backRightBtn, styles.backRightBtnRight]}
-                onPress={() => this.deleteRow(rowMap, data.item.key, data.item.external_id)}
             >
-                <Text style={styles.backTextWhite}>Delete</Text>
+                <Icon name="ios-more" />
             </TouchableOpacity>
         </View>
     );
-    renderItem = data => (
-        <TouchableHighlight
-            onPress={() => console.log('You touched me')}
-            style={styles.rowFront}
-            underlayColor={'#AAA'}
-        >
-            <ListItem>
-                <Left>
-                    <Text>{data.item.title}</Text>
-                    <Text note>${data.item.price}</Text>
-                </Left>
-                <Body/>
-                <Right />
-            </ListItem>
-        </TouchableHighlight>
-    );
+    renderItem = data => {
+        return (
+            <TouchableHighlight
+                onPress={() => console.log('You touched me')}
+                style={styles.rowFront}
+                underlayColor={'#AAA'}
+            >
+                <Card style={{ height: "100%" }}>
+                    <CardItem>
+                        <Left style={{ flexDirection: "row" }}>
+                            <Label>{data.item[1].title}</Label>
+                            <Text note style={{ fontFamily: "Avenir-LightOblique" }}>${data.item[1].price} (x{data.item[1].count})</Text>
+                        </Left>
+                        <Right>
+                            <Segment style={{ backgroundColor: "white" }}>
+
+                                <Button onPress={() => this.addItem(data.item[1])} first>
+                                    <Icon name="ios-add" />
+                                </Button>
+                                <Button onPress={() => this.removeItem(data.item[1])} last>
+                                    <Icon name="ios-remove" />
+                                </Button>
+                            </Segment>
+                        </Right>
+                    </CardItem>
+                </Card>
+            </TouchableHighlight>
+        )
+    };
     render() {
-        //console.log(this.props.cart[0], "85")
         return (
             <Container>
-                <View style={styles.headerContainer} scrollEnabled={false}>
-                    <H1>Cart</H1>
-                </View>
-                <View>
-                    <SwipeListView
-                        data={this.state.cart}
-                        renderItem={this.renderItem}
-                        leftOpenValue={75}
-                        renderHiddenItem={this.renderHiddenItem}
-                        disableRightSwipe
-                        rightOpenValue={-150}
-                    >
-                    </SwipeListView>
-                </View>
+                {[...this.state.mapCart].length > 0 ?
+                    <>
+                        <View style={styles.headerContainer} scrollEnabled={false}>
+                            <H1>Cart</H1>
+                        </View>
+                        <SwipeListView
+                            data={[...this.state.mapCart]}
+                            renderItem={this.renderItem}
+                            renderHiddenItem={this.renderHiddenItem}
+                            disableRightSwipe
+                            rightOpenValue={-100}
+                            keyExtractor={(item, index) => String(item[1].key)}
+                        >
+
+                        </SwipeListView>
+                        <List>
+                            <ListItem>
+                                <Text note>Subtotal: </Text><Text>${Number(this.state.total).toFixed(2)}</Text>
+                            </ListItem>
+                            <ListItem>
+                                <Text note>Taxes: </Text><Text>${Number(this.state.total * 0.10).toFixed(2)}</Text>
+                            </ListItem>
+                            <ListItem>
+                                <Text note>Total: </Text><Text>${Number(this.state.total + (this.state.total * 0.10)).toFixed(2)}</Text>
+                            </ListItem>
+                        </List>
+                        <Button style={{ borderRadius: '0' }} block iconLeft><Icon name="ios-checkmark" /><Text>Checkout (${Number(this.state.total + (this.state.total * 0.10)).toFixed(2)})</Text></Button>
+                    </> :
+                    <Content contentContainerStyle={{ justifyContent: "center", height:"100%" }}>
+                        <Card transparent>
+                            <CardItem style={{justifyContent:"center", width:"auto"}}>
+                                <Icon style={{fontSize:100, width:"auto", color:"rgba(0,0,0,0.2)"}} name="ios-cart" />
+                            </CardItem>
+                            <CardItem style={{justifyContent:'center'}}>
+                                <Text note style={{ fontFamily: "Avenir-LightOblique", textAlign: "center" }}>
+                                    There's nothing in your cart
+                                </Text>
+                            </CardItem>
+                        </Card>
+                    </Content>}
             </Container>
         );
     }
 }
 const styles = StyleSheet.create({
+    fontAnvenir: {
+        fontFamily: "Avenir"
+    },
     headerContainer: {
         flexDirection: "row",
         justifyContent: "center",
@@ -115,8 +155,6 @@ const styles = StyleSheet.create({
     },
     rowFront: {
         backgroundColor: '#dcdcdc',
-        borderBottomColor: 'black',
-        borderBottomWidth: 1,
         justifyContent: 'center',
         height: 75,
     },
@@ -134,14 +172,14 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         position: 'absolute',
         top: 0,
-        width: 150,
+        width: 100,
     },
     backRightBtnLeft: {
         backgroundColor: 'blue',
         right: 75,
     },
     backRightBtnRight: {
-        backgroundColor: 'red',
+        backgroundColor: '#dcdcdc',
         right: 0,
     },
 });

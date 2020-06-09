@@ -27,30 +27,30 @@ export default class HomeScreen extends React.Component {
         this.setUserDoc();
         this.getLocationsNearBy();
     }
-    getLocationsNearBy(){
-        let data =[];
-        var locRef = db.collection("locations").doc("states").collection("WI").get().then(querySnapshot=>{
-            querySnapshot.forEach(function(doc){
+    getLocationsNearBy() {
+        let data = [];
+        var locRef = db.collection("locations").doc("states").collection("WI").get().then(querySnapshot => {
+            querySnapshot.forEach(function (doc) {
                 //console.log(Array(doc.data()), "DOCDATA")
                 data.push(doc.data());
             })
-            this.setState({locations:data})
+            this.setState({ locations: data })
         });
     }
-    setUserDoc(){
+    setUserDoc() {
         var userRef = db.collection("users").doc(firebase.auth().currentUser.uid);
         userRef
-        .get()
-        .then(doc => {
-          if (!doc.exists) {
-             db.collection("users").doc(firebase.auth().currentUser.uid).set({
-                email:firebase.auth().currentUser.email
+            .get()
+            .then(doc => {
+                if (!doc.exists) {
+                    db.collection("users").doc(firebase.auth().currentUser.uid).set({
+                        email: firebase.auth().currentUser.email
+                    })
+                }
             })
-          }
-        })
-        .catch(function(error) {
-          console.log("Error getting document:", error);
-        });
+            .catch(function (error) {
+                console.log("Error getting document:", error);
+            });
     }
     handleSeat = () => {
         this.setState({ seatOpen: !this.state.seatOpen })
@@ -82,12 +82,17 @@ export default class HomeScreen extends React.Component {
                             <ListItem underlayColor="rgba(0,0,0,0.1)" selected={this.state.seatOpen} button onPress={this.handleSeat} noBorder>
                                 <Left>
                                     <Icon style={{ fontSize: 20, color: 'red' }} name="ios-pin" />
-                                    <Text style={{ color: "white" }}>
+                                    <Text style={{ color: "white", fontFamily: "Avenir" }}>
                                         Century Link Field
                                         {"\n"}
-                                        <Text note>
-                                            Section:{this.state.seat.section}{" "} Seat:{this.state.seat.seatNumber}
+                                        <Text note style={{fontFamily:"Avenir-LightOblique"}}>
+                                            Section:{" "}
                                         </Text>
+                                        <Text note>
+                                            {this.state.seat.section}{"   "}
+                                        </Text>
+                                        <Text note style={{fontFamily:"Avenir-LightOblique"}}>Seat:{" "}</Text>
+                                        <Text note>{this.state.seat.seatNumber}</Text>
                                     </Text>
 
                                 </Left>
@@ -99,12 +104,12 @@ export default class HomeScreen extends React.Component {
                             <Animatable.View duration={300} animation={"flipInX"}>
                                 <Form style={{ backgroundColor: "rgba(0,0,0,0.80)" }}>
                                     <Item inlineLabel regular bordered={false} style={{ borderColor: "black", paddingLeft: 20 }}>
-                                        <Label style={{ color: "white", fontStyle: "italic" }}>Section:</Label>
+                                        <Label style={{ color: "white", fontFamily:"Avenir-Light", fontSize:14 }}>Section:</Label>
                                         <Input inlineLabel autoCapitalize="characters" value={this.state.seat.section}
-                                            onChange={(e) => this.changeSeat(e, "section")} style={{ color: "white",borderBottomColor:"red", borderBottomWidth:1 }} selectionColor="red" placeholder="Section" />
-                                        <Label style={{ color: "white", fontStyle: "italic" }}>Seat:</Label>
+                                            onChange={(e) => this.changeSeat(e, "section")} style={{ color: "white"}} selectionColor="red" placeholder="Section" />
+                                        <Label style={{ color: "white", fontFamily:"Avenir-Light", fontSize:14 }}>Seat:</Label>
                                         <Input inlineLabel autoCapitalize="characters" value={this.state.seat.seatNumber}
-                                            onChange={(e) => this.changeSeat(e, "seatNumber")} style={{ color: "white",borderBottomColor:"red", borderBottomWidth:1 }} selectionColor="red" inlineLabel="Section" placeholder="Seat" />
+                                            onChange={(e) => this.changeSeat(e, "seatNumber")} style={{ color: "white"}} selectionColor="red" inlineLabel="Section" placeholder="Seat" />
                                     </Item>
                                 </Form>
                             </Animatable.View>
@@ -113,7 +118,7 @@ export default class HomeScreen extends React.Component {
 
                     <View>
                         <Grid>
-                            <Card style={{ paddingBottom: 14, width:"100%" }}>
+                            <Card style={{ paddingBottom: 14, width: "100%" }}>
                                 <CardItem header>
                                     <Text>Near By</Text>
                                 </CardItem>
@@ -122,7 +127,7 @@ export default class HomeScreen extends React.Component {
                                         {this.state.locations.map((location, index) => (
                                             <UberCard key={index} {...this.props}
                                                 location={location}
-                                                />
+                                            />
                                         ))}
                                     </ScrollView>
 
@@ -248,7 +253,7 @@ const styles = StyleSheet.create({
         flex: 1, justifyContent: "center", alignItems: "center"
     },
     h1: {
-        textAlign: "center", color: "white"
+        textAlign: "center", color: "white", fontFamily: "Avenir-Medium"
     },
     col: {
         padding: 5, flex: 1, justifyContent: "center", alignItems: "center"

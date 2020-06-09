@@ -16,13 +16,12 @@ export default class SearchScreen extends React.Component {
     render() {
         return (
             <View style={{ flex: 1 }}>
-                <StatusBar barStyle="light-content" backgroundColor="black" />
                 <Container>
-                    <Header transparent iosBarStyle="dark-content" searchBar style={{ backgroundColor: "white" }} rounded>
+                    <Header transparent iosBarStyle="light-content" searchBar style={{ backgroundColor: "black" }} rounded>
                         <Item underline style={this.state.focus ? styles.focusedInput: styles.nonFocusedInput}>
-                            <Icon name="ios-search" />
-                            <Input onFocus={() => this.setState({ focus: true })} onBlur={() => this.setState({ focus: false })} placeholder="Search" />
-                            <Icon name="ios-restaurant" />
+                            <Icon style={{color:"white"}} name="ios-search" />
+                            <Input placeholderTextColor="white" style={{color:'white'}} onFocus={() => this.setState({ focus: true })} onBlur={() => this.setState({ focus: false })} placeholder="Search" />
+                            <Icon style={{color:"white"}} name="ios-restaurant" />
                         </Item>
                         {this.state.focus ? 
                         <Button transparent>
@@ -44,9 +43,9 @@ export default class SearchScreen extends React.Component {
 
 const styles = StyleSheet.create({
     focusedInput:{
-        backgroundColor: "white", height: 40, shadowOffset: { width: 0, height: 5 }, shadowColor: "black", shadowOpacity: 0.1
+        backgroundColor: "black",color:'white', height: 35, borderBottomColor:"white"
     },
     nonFocusedInput:{
-        backgroundColor: "white", height: 40,
+        backgroundColor: "black",color:"white", height: 35,
     }
 })

@@ -6,7 +6,7 @@ import thunkMiddleware from 'redux-thunk';
 //
 
 const initialState = {
-    cart: []
+    mapCart: new Map()
 }
 
 //
@@ -15,8 +15,29 @@ const initialState = {
 
 const reducer = (state = initialState, action) => {
     switch (action.type) {
-        case "addItemToCart": return { ...state, cart: action.value }
-        case "removeItemFromCart": return { ...state, cart: action.value }
+        case "addItem": 
+            if(state.mapCart.has(action.value.external_id)){
+                let item = Object.assign({},state.mapCart.get(action.value.external_id));
+                item.count = item.count +1;
+                state.mapCart.set(item.external_id, item);
+            }
+            else{
+                action.value.count = 1;
+                state.mapCart.set(action.value.external_id, action.value)
+            }
+            //console.log(state.mapCart)
+            return Object.assign({},state,{ mapCart:state.mapCart})
+        case "removeItem":
+            let item = Object.assign({},state.mapCart.get(action.value.external_id));
+            if(item.count>1){
+                item.count = item.count - 1;
+                state.mapCart.set(item.external_id, item);
+            }
+            else{
+                state.mapCart.delete(item.external_id);
+            }
+            //console.log(state.mapCart)
+            return Object.assign({},state,{ mapCart:state.mapCart})
         default: return state;
     }
     return state;
@@ -34,19 +55,19 @@ export { store };
 // Action Creators...
 //
 
-const addItemToCart = (cart) => {
-    //console.log(cart)
+const addItem = (item) => {
+    //console.log(item)
     return {
-        type: "addItemToCart",
-        value: cart
+        type: "addItem",
+        value: item
     }
 }
-export { addItemToCart };
+export { addItem };
 
-const removeItemFromCart = (cart) => {
+const removeItem = (item) => {
     return {
-        type: "removeItemFromCart",
-        value: cart
+        type: "removeItem",
+        value: item
     }
 }
-export { removeItemFromCart };
+export { removeItem };

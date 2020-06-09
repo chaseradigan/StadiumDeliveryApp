@@ -292,7 +292,6 @@ const data = {
     ]
 };
 import firebase from "./firebase";
-import uuid from 'react-native-uuid';
 var db = firebase.firestore();
 
 export default class MockData extends React.Component {
@@ -328,7 +327,7 @@ export default class MockData extends React.Component {
                 avgRating: avgRating,
                 time: `${price} mins`,
                 photo: photo,
-                id: uuid.v4()
+                id: Math.random()
             });
         }
     }

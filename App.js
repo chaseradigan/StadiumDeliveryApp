@@ -35,11 +35,6 @@ export default class App extends React.Component {
     }
   }
   async componentDidMount() {
-    await Font.loadAsync({
-      Roboto: require('native-base/Fonts/Roboto.ttf'),
-      Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf'),
-      ...Ionicons.font,
-    });
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
         this.setState({ active: true, authDone: true })
@@ -49,6 +44,12 @@ export default class App extends React.Component {
     })
   }
   async _loadAssetsAsync() {
+    await Font.loadAsync({
+      Roboto: require('native-base/Fonts/Roboto.ttf'),
+      Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf'),
+      ...Ionicons.font,
+    });
+    
     const imageAssets = cacheImages([
       require('./images/beer2.jpg'),
       require('./images/burger.jpg'),

@@ -11,7 +11,6 @@ import ShoppingCart from '../screens/ShoppingCart';
 const Stack = createStackNavigator();
 
 export default function MyStack({ navigation }) {
-
     return (
         <Stack.Navigator>
             <Stack.Screen name="Home" component={HomeScreen} options={{
@@ -19,10 +18,11 @@ export default function MyStack({ navigation }) {
                 headerStyle: {
                     backgroundColor: 'black'
                 },
-
                 headerTintColor: 'white',
                 headerTitleStyle: {
                     fontWeight: 'bold',
+                    fontFamily:"Copperplate-Bold",
+                    fontSize:28
                 },
                 headerRight: () =>  <CartIcon {...navigation}/>
             }} />
@@ -31,25 +31,28 @@ export default function MyStack({ navigation }) {
                 headerStyle: {
                     backgroundColor: 'black'
                 },
-
                 headerTintColor: 'white',
                 headerTitleStyle: {
                     fontWeight: 'bold',
                 },
                 headerBackTitle: "Back"
             }} />
-            <Stack.Screen name="Venue" component={VenScreen}
+            <Stack.Screen name="Venue"
+             component={VenScreen}
                 options={{
                     title: 'Venue',
                     headerStyle: {
-                        backgroundColor: 'black'
+                        backgroundColor: 'black',
+                        shadowOffset:{
+                            height:0
+                        }
                     },
-
                     headerTintColor: 'white',
                     headerTitleStyle: {
                         fontWeight: 'bold',
                     },
-                    headerBackTitle: "Back"
+                    headerBackTitle: "Back",
+                    headerRight:()=> <CartIcon {...navigation}/>
                 }}
             />
             <Stack.Screen
@@ -77,12 +80,12 @@ export default function MyStack({ navigation }) {
                     headerStyle: {
                         backgroundColor: 'black'
                     },
-
+                    
                     headerTintColor: 'white',
                     headerTitleStyle: {
                         fontWeight: 'bold',
                     },
-                    headerBackTitle: "Home"
+                    headerBackTitle: "Back "
                 }} />
         </Stack.Navigator>
     );
