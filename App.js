@@ -78,6 +78,7 @@ export default class App extends React.Component {
     else
       return (
         <View style={{ flex: 1 }}>
+          <StatusBar barStyle="light-content"/>
           <Image source={require('./assets/splash.png')} />
           <AppLoading
             startAsync={this._loadAssetsAsync}

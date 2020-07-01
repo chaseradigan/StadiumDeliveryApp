@@ -17,7 +17,7 @@ export default class SearchScreen extends React.Component {
         return (
             <View style={{ flex: 1 }}>
                 <Container>
-                    <Header transparent iosBarStyle="light-content" searchBar style={{ backgroundColor: "black" }} rounded>
+                    <Header transparent iosBarStyle="light-content"  style={{ backgroundColor: "black" }} rounded>
                         <Item underline style={this.state.focus ? styles.focusedInput: styles.nonFocusedInput}>
                             <Icon style={{color:"white"}} name="ios-search" />
                             <Input placeholderTextColor="white" style={{color:'white'}} onFocus={() => this.setState({ focus: true })} onBlur={() => this.setState({ focus: false })} placeholder="Search" />

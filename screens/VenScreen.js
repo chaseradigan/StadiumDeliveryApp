@@ -5,8 +5,6 @@ import {
   StyleSheet,
   View,
   Animated,
-  Modal,
-  Dimensions
 } from 'react-native'
 import { H1, Card, CardItem, Left, Body, Right, Icon, Text, H3, Button, Segment, Row, Col, Header, Container } from 'native-base'
 import { connect } from 'react-redux';
@@ -17,7 +15,8 @@ import "firebase/auth";
 import "firebase/storage";
 import Tag from './components/Tag';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import ReactNativeModal from 'react-native-modal';
+import OptionsModal from './components/OptionsModal';
+
 var db = firebase.firestore();
 const mapStateToProps = (state) => {
   return {
@@ -38,7 +37,6 @@ class VenScreen extends React.Component {
       uri: 'https://cdn.dribbble.com/users/1846841/screenshots/4961950/epi_x.png',
       mapCart: this.props.mapCart,
       menu: null,
-      active: "",
       modalActive: false
     }
     this.scrollY = new Animated.Value(0)
@@ -91,15 +89,14 @@ class VenScreen extends React.Component {
                 <Col key={index}>
                   <Button
                     key={index}
-                    onPress={() => {
-                      this.setState({ active: index })
+                    onPress={() => 
                       this.scrollViewRef.scrollTo({
                         y: this[index].y, animated: true
                       })
-                    }}
+                    }
                     rounded
                     small
-                    style={index !== this.state.active ? { backgroundColor: "white" } : { backgroundColor: "#dcdcdc" }}
+                    style={{ backgroundColor: "white" }}
                   >
                     <Text style={{ color: "black", fontFamily: "Avenir-Black" }}>{item.title}</Text>
                   </Button>
@@ -109,42 +106,7 @@ class VenScreen extends React.Component {
           </ScrollView>
         </Header>
         <View style={styles.container}>
-        <ReactNativeModal
-            deviceHeight={Dimensions.get("window").height}
-            deviceWidth={Dimensions.get("window").width}
-            style={{marginLeft:0, marginRight:0,marginTop:0}}
-            swipeDirection="down"
-            coverScreen={false}
-            backdropColor="white"
-            animationIn="slideInUp"
-            animationOut="slideOutDown"
-            backdropOpacity={1}
-            onSwipeComplete={()=>this.setState({modalActive:false})}
-            isVisible={this.state.modalActive}
-            onRequestClose={() => {
-              Alert.alert("Modal has been closed.");
-            }}
-          >
-            <Container>
-             <View style={{flex:1, alignItems:"flex-start"}}>
-                <Button transparent style={{width:"auto"}} onPress={()=>this.setState({modalActive:false, activeItem:null})}>
-                  <Icon name="ios-close" style={{color:"black", fontSize:30}}/>
-                  </Button>
-                </View>
-            <View style={styles.centeredView}>
-              <View style={styles.modalView}>
-                <Text style={styles.modalText}>No options available</Text>
-              </View>
-              <Button full onPress={()=>{
-                  this.onSetItem(this.state.activeItem)
-                  this.setState({activeItem:null, modalActive:false})
-                }}
-                >
-                  <Text style={styles.modalText}>Add To Cart</Text>
-                </Button>
-            </View>
-            </Container>
-          </ReactNativeModal>
+          <OptionsModal onSetItem={(item)=>this.onSetItem(item)} activeItem={this.state.activeItem} modalActive={this.state.modalActive}/>
           <Animated.View style={[styles.imageContainer, { height: imageContainerHeight }]}>
             <Image style={styles.image} source={{ uri: this.state.uri }} />
           </Animated.View>

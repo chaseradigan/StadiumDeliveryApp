@@ -1,11 +1,15 @@
 import React from 'react';
+import firebase from "../firebase";
+import "firebase/firestore";
+import "firebase/auth";
+import "firebase/storage";
 import { View, StyleSheet, TouchableOpacity, TouchableHighlight } from 'react-native';
 import { connect } from 'react-redux';
 import { removeItem, addItem } from '../redux/app-redux';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import { Container, Icon, Left, Right, Body, H1, Text, Card, CardItem, Button, List, ListItem, Content, Label, Segment } from 'native-base';
-import { Stepper } from 'react-native-ui-lib';
-import Tag from './components/Tag';
+import OptionsModal from './components/OptionsModal';
+
 const mapStateToProps = (state) => {
     return {
         mapCart: state.mapCart
@@ -26,7 +30,9 @@ class ShoppingCartScreen extends React.Component {
         super(props);
         this.state = {
             mapCart: this.props.mapCart,
-            total: 0
+            total: 0,
+            modalActive:false,
+            activeItem:null
         }
     }
     componentDidMount() {
@@ -43,7 +49,7 @@ class ShoppingCartScreen extends React.Component {
     }
     addItem(item) {
         this.props.addItem(item);
-        this.setState({ mapCart: this.props.mapCart });
+        this.setState({ mapCart: this.props.mapCart, activeItem:null, modalActive:false });
         this.getTotal([...this.state.mapCart])
     }
     removeItem(item) {
@@ -63,7 +69,7 @@ class ShoppingCartScreen extends React.Component {
     renderItem = data => {
         return (
             <TouchableHighlight
-                onPress={() => console.log('You touched me')}
+                onPress={() => this.setState({modalActive:true, activeItem:data.item[1]})}
                 style={styles.rowFront}
                 underlayColor={'#AAA'}
             >
@@ -92,6 +98,7 @@ class ShoppingCartScreen extends React.Component {
     render() {
         return (
             <Container>
+                <OptionsModal onSetItem={(item)=>this.addItem(item)} activeItem={this.state.activeItem} modalActive={this.state.modalActive}/>
                 {[...this.state.mapCart].length > 0 ?
                     <>
                         <View style={styles.headerContainer} scrollEnabled={false}>
@@ -118,7 +125,7 @@ class ShoppingCartScreen extends React.Component {
                                 <Text note>Total: </Text><Text>${Number(this.state.total + (this.state.total * 0.10)).toFixed(2)}</Text>
                             </ListItem>
                         </List>
-                        <Button style={{ borderRadius: '0' }} block iconLeft><Icon name="ios-checkmark" /><Text>Checkout (${Number(this.state.total + (this.state.total * 0.10)).toFixed(2)})</Text></Button>
+                        <Button style={{ borderRadius: '0' }} block iconLeft onPress={}><Icon name="ios-checkmark" /><Text>Checkout (${Number(this.state.total + (this.state.total * 0.10)).toFixed(2)})</Text></Button>
                     </> :
                     <Content contentContainerStyle={{ justifyContent: "center", height:"100%" }}>
                         <Card transparent>
